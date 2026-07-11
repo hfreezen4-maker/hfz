@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>타자 서바이벌 - 베네치아</title>
+<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- 로그인 -->
+  <section id="screen-login" class="screen active">
+    <div class="login-box">
+      <h1>🏝️ 서바이벌 게임</h1>
+      <p class="subtitle">닉네임을 입력하고 방을 선택하세요</p>
+      <input id="nickname-input" maxlength="10" placeholder="닉네임 (최대 10자)" autocomplete="off" />
+
+      <div class="room-select">
+        <button class="room-btn selected" id="room-btn-typing" data-room="typing">
+          <span class="room-emoji">⌨️</span>
+          <span class="room-name">타자연습</span>
+          <span class="room-desc">영어 단어 타자 서바이벌</span>
+        </button>
+        <button class="room-btn" id="room-btn-quiz" data-room="quiz">
+          <span class="room-emoji">🧠</span>
+          <span class="room-name">정보 퀴즈</span>
+          <span class="room-desc">상식 문제 20개 서바이벌</span>
+        </button>
+      </div>
+
+      <button id="btn-join">입장하기</button>
+      <p id="login-error" class="error-msg"></p>
+    </div>
+  </section>
+
+  <!-- 대기실 -->
+  <section id="screen-waiting" class="screen">
+    <div class="waiting-header">
+      <h2><span id="waiting-room-label"></span> 대기실 <span id="waiting-count">(0/35)</span></h2>
+      <button id="btn-start" class="hidden">게임 시작</button>
+      <p id="waiting-hint" class="hint">호스트가 게임을 시작하기를 기다리는 중...</p>
+    </div>
+    <div id="waiting-grid" class="waiting-grid"></div>
+  </section>
+
+  <!-- 게임 화면 -->
+  <section id="screen-game" class="screen">
+    <button id="btn-ranking-toggle" class="ranking-toggle">🏆 순위</button>
+    <div id="stage" class="stage">
+      <div id="water-line" class="water-line"></div>
+      <div id="players-layer" class="players-layer"></div>
+      <div id="countdown-overlay" class="countdown-overlay hidden">
+        <div id="countdown-number">3</div>
+      </div>
+    </div>
+    <div class="quiz-panel">
+      <div class="quiz-top">
+        <span id="round-label">라운드 1</span>
+        <span id="alive-label">생존 0명</span>
+      </div>
+      <div id="timer-bar-wrap"><div id="timer-bar"></div></div>
+      <div id="word-display"></div>
+      <input id="answer-input" autocomplete="off" placeholder="여기에 정답을 입력하세요" />
+      <p id="answer-feedback"></p>
+    </div>
+  </section>
+
+  <!-- 결과 -->
+  <section id="screen-result" class="screen">
+    <div class="result-box">
+      <p class="result-sub">🏆 최후의 생존자 🏆</p>
+      <div id="winner-animal" class="winner-animal"></div>
+      <h1 id="winner-name">-</h1>
+      <div class="result-ranking-wrap">
+        <h3>전체 순위</h3>
+        <div id="result-ranking-list" class="ranking-list"></div>
+      </div>
+      <button id="btn-restart" class="hidden" disabled>다시 시작</button>
+      <p id="restart-hint" class="hint">호스트만 재시작할 수 있습니다</p>
+    </div>
+  </section>
+
+  <!-- 호스트 전용 일시정지 오버레이 -->
+  <div id="pause-overlay" class="pause-overlay hidden">
+    <div class="pause-box">
+      <h2 id="pause-title">⏸️ 일시정지</h2>
+      <button id="btn-resume" class="hidden">▶ 다시 재개</button>
+      <button id="btn-restart-mid" class="hidden">🔄 재시작</button>
+      <p id="pause-nonhost-hint" class="hint hidden">호스트가 게임을 일시정지했습니다</p>
+    </div>
+  </div>
+
+  <!-- 순위 오버레이 (게임 멈추지 않음, 개인 열람용) -->
+  <div id="ranking-overlay" class="pause-overlay hidden">
+    <div class="pause-box ranking-box">
+      <h2>🏆 전체 순위</h2>
+      <div id="ranking-list" class="ranking-list"></div>
+      <button id="btn-ranking-close">닫기</button>
+    </div>
+  </div>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="client.js"></script>
+</body>
+</html>
