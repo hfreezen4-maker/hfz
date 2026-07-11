@@ -91,6 +91,18 @@ function playSplashSound() {
 const nicknameInput = document.getElementById('nickname-input');
 const btnJoin = document.getElementById('btn-join');
 const loginError = document.getElementById('login-error');
+const roomButtons = document.querySelectorAll('.room-btn');
+let selectedRoom = 'typing';
+let currentRoomLabel = '';
+let quizTotal = null;
+
+roomButtons.forEach(btn => {
+  btn.addEventListener('click', () => {
+    roomButtons.forEach(b => b.classList.remove('selected'));
+    btn.classList.add('selected');
+    selectedRoom = btn.dataset.room;
+  });
+});
 
 btnJoin.addEventListener('click', doJoin);
 nicknameInput.addEventListener('keydown', e => { if (e.key === 'Enter') doJoin(); });
@@ -100,7 +112,7 @@ function doJoin() {
   const nickname = nicknameInput.value.trim();
   if (!nickname) { loginError.textContent = '닉네임을 입력해주세요.'; return; }
   loginError.textContent = '';
-  socket.emit('join', { nickname });
+  socket.emit('join', { nickname, room: selectedRoom });
 }
 
 socket.on('errorMsg', ({ message }) => { loginError.textContent = message; });
@@ -108,12 +120,15 @@ socket.on('errorMsg', ({ message }) => { loginError.textContent = message; });
 // ---------- 대기실 ----------
 const waitingGrid = document.getElementById('waiting-grid');
 const waitingCount = document.getElementById('waiting-count');
+const waitingRoomLabel = document.getElementById('waiting-room-label');
 const btnStart = document.getElementById('btn-start');
 const waitingHint = document.getElementById('waiting-hint');
 
-socket.on('joined', ({ self, isHost: hostFlag, players: list }) => {
+socket.on('joined', ({ self, isHost: hostFlag, players: list, roomLabel, quizTotal: qt }) => {
   myId = self.id;
   isHost = hostFlag;
+  currentRoomLabel = roomLabel || '';
+  quizTotal = qt || null;
   cachePlayers(list);
   renderWaitingRoom();
   showScreen('waiting');
@@ -134,6 +149,7 @@ function cachePlayers(list) {
 
 function renderWaitingRoom() {
   const list = Object.values(players);
+  waitingRoomLabel.textContent = currentRoomLabel;
   waitingCount.textContent = `(${list.length}/35)`;
   waitingGrid.innerHTML = '';
   list.forEach(p => {
@@ -194,14 +210,19 @@ function rowToTopPercent(row) {
   return STAGE_TOP_PAD + (row / MAX_ROW) * usable;
 }
 
-socket.on('countdownNumber', ({ n, round, aliveCount }) => {
+function formatRoundLabel(round) {
+  return quizTotal ? `문제 ${round}/${quizTotal}` : `라운드 ${round}`;
+}
+
+socket.on('countdownNumber', ({ n, round, aliveCount, quizTotal: qt }) => {
+  if (qt) quizTotal = qt;
   alreadyAnswered = false;
   clearInterval(localTimerInterval);
   timerBar.style.width = '0%';
   wordDisplay.textContent = '';
   answerFeedback.textContent = ''; answerFeedback.className = '';
   answerInput.value = ''; answerInput.disabled = true;
-  if (round) roundLabel.textContent = `라운드 ${round}`;
+  if (round) roundLabel.textContent = formatRoundLabel(round);
   if (aliveCount) aliveLabel.textContent = `생존 ${aliveCount}명`;
 
   countdownOverlay.classList.remove('hidden');
@@ -212,11 +233,13 @@ socket.on('countdownNumber', ({ n, round, aliveCount }) => {
   playCountdownBeep(n);
 });
 
-socket.on('questionStart', ({ round, word, timeLimit, aliveCount }) => {
+socket.on('questionStart', ({ round, questionText, timeLimit, aliveCount, quizTotal: qt }) => {
+  if (qt) quizTotal = qt;
   countdownOverlay.classList.add('hidden');
-  roundLabel.textContent = `라운드 ${round}`;
+  roundLabel.textContent = formatRoundLabel(round);
   aliveLabel.textContent = `생존 ${aliveCount}명`;
-  wordDisplay.textContent = word;
+  wordDisplay.textContent = questionText;
+  wordDisplay.classList.toggle('quiz-mode', !!quizTotal);
   answerFeedback.textContent = ''; answerFeedback.className = '';
   answerInput.value = '';
   alreadyAnswered = false;
@@ -227,7 +250,7 @@ socket.on('questionStart', ({ round, word, timeLimit, aliveCount }) => {
     answerInput.placeholder = '탈락하여 관전 중입니다';
   } else {
     answerInput.disabled = false;
-    answerInput.placeholder = '여기에 단어를 입력하세요';
+    answerInput.placeholder = '여기에 정답을 입력하세요';
     answerInput.focus();
   }
 
