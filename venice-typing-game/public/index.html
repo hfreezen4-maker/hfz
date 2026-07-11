@@ -11,9 +11,23 @@
   <!-- 로그인 -->
   <section id="screen-login" class="screen active">
     <div class="login-box">
-      <h1>🏝️ 타자 서바이벌</h1>
-      <p class="subtitle">닉네임을 입력하고 입장하세요</p>
+      <h1>🏝️ 서바이벌 게임</h1>
+      <p class="subtitle">닉네임을 입력하고 방을 선택하세요</p>
       <input id="nickname-input" maxlength="10" placeholder="닉네임 (최대 10자)" autocomplete="off" />
+
+      <div class="room-select">
+        <button class="room-btn selected" id="room-btn-typing" data-room="typing">
+          <span class="room-emoji">⌨️</span>
+          <span class="room-name">타자연습</span>
+          <span class="room-desc">영어 단어 타자 서바이벌</span>
+        </button>
+        <button class="room-btn" id="room-btn-quiz" data-room="quiz">
+          <span class="room-emoji">🧠</span>
+          <span class="room-name">정보 퀴즈</span>
+          <span class="room-desc">상식 문제 20개 서바이벌</span>
+        </button>
+      </div>
+
       <button id="btn-join">입장하기</button>
       <p id="login-error" class="error-msg"></p>
     </div>
@@ -22,7 +36,7 @@
   <!-- 대기실 -->
   <section id="screen-waiting" class="screen">
     <div class="waiting-header">
-      <h2>대기실 <span id="waiting-count">(0/35)</span></h2>
+      <h2><span id="waiting-room-label"></span> 대기실 <span id="waiting-count">(0/35)</span></h2>
       <button id="btn-start" class="hidden">게임 시작</button>
       <p id="waiting-hint" class="hint">호스트가 게임을 시작하기를 기다리는 중...</p>
     </div>
@@ -46,7 +60,7 @@
       </div>
       <div id="timer-bar-wrap"><div id="timer-bar"></div></div>
       <div id="word-display"></div>
-      <input id="answer-input" autocomplete="off" placeholder="여기에 단어를 입력하세요" />
+      <input id="answer-input" autocomplete="off" placeholder="여기에 정답을 입력하세요" />
       <p id="answer-feedback"></p>
     </div>
   </section>
