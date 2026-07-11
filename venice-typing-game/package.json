@@ -1,0 +1,13 @@
+{
+  "name": "venice-typing-game",
+  "version": "1.0.0",
+  "description": "35인 동시접속 영어 타자 서바이벌 게임 (한컴타자 베네치아 스타일)",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.19.2",
+    "socket.io": "^4.7.5"
+  }
+}
