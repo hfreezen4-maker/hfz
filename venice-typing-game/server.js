@@ -23,10 +23,10 @@ const COUNTDOWN_STEP_MS = 700; // 3,2,1 각 숫자 유지 시간
 
 // 라운드별 제한시간(초) - 5초부터 시작해서 점점 줄어듭니다
 function getRoundTime(round) {
-  if (round <= 10) return 5;
-  if (round <= 20) return 4;
-  if (round <= 26) return 3;
-  if (round <= 31) return 2;
+  if (round <= 5) return 5;
+  if (round <= 10) return 4;
+  if (round <= 15) return 3;
+  if (round <= 20) return 2;
   return 1;
 }
 
